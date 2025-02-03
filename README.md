@@ -26,7 +26,6 @@ Before installation, ensure you have the following installed:
 
 ```bash
 git clone https://github.com/SG002/BharatFD-Backend-Developer.git
-cd faq-management-system
 ```
 
 ### 2. Backend Setup
@@ -38,10 +37,9 @@ cd backend
 # Install dependencies
 npm install
 
-# Create .env file (if needed)
+# Create .env file (optional)
 cp .env.example .env
 
-# Start the server
 npm start
 ```
 
