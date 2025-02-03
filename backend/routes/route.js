@@ -1,13 +1,12 @@
 import express from 'express';
 import { Router } from 'express';
 import FAQ from '../models/faqm.js';
-// const { translateFAQ, supportedLanguages } = require('../helper/translate');
 import { translateFAQ, supportedLanguages } from '../helper/translate.js';  
-const { cacheService } = require('../config/redis');
+import { cacheService } from '../config/redis.js';
 
 const router = Router();
 
-// Middleware to validate language parameter
+
 const validateLang = (req, res, next) => {
   const lang = req.query.lang || 'en';
   if (lang !== 'en' && !supportedLanguages.includes(lang)) {
@@ -18,19 +17,19 @@ const validateLang = (req, res, next) => {
   next();
 };
 
-// Get all FAQs with Redis caching
+
 router.get('/', validateLang, async (req, res) => {
   try {
     const lang = req.query.lang || 'en';
     const cacheKey = `faqs:${lang}`;
 
-    // Try to get data from cache
+
     const cachedData = await cacheService.get(cacheKey);
     if (cachedData) {
       return res.json(cachedData);
     }
 
-    // If not in cache, get from database
+   
     const faqs = await FAQ.findByLanguage(lang);
     const response = {
       language: lang,
@@ -39,7 +38,6 @@ router.get('/', validateLang, async (req, res) => {
       faqs
     };
 
-    // Store in cache
     await cacheService.set(cacheKey, response);
     res.json(response);
   } catch (error) {
@@ -48,13 +46,11 @@ router.get('/', validateLang, async (req, res) => {
   }
 });
 
-// Get single FAQ by ID with Redis caching
 router.get('/:id', validateLang, async (req, res) => {
   try {
     const lang = req.query.lang || 'en';
     const cacheKey = `faq:${req.params.id}:${lang}`;
 
-    // Try to get data from cache
     const cachedData = await cacheService.get(cacheKey);
     if (cachedData) {
       return res.json(cachedData);
@@ -73,7 +69,6 @@ router.get('/:id', validateLang, async (req, res) => {
       supportedLanguages: faq.supportedLanguages
     };
 
-    // Store in cache
     await cacheService.set(cacheKey, response);
     res.json(response);
   } catch (error) {
@@ -82,7 +77,6 @@ router.get('/:id', validateLang, async (req, res) => {
   }
 });
 
-// Create FAQ with cache invalidation
 router.post('/', async (req, res) => {
   try {
     const { question, answer } = req.body;
@@ -94,7 +88,6 @@ router.post('/', async (req, res) => {
     const faq = new FAQ({ question, answer, translations });
     await faq.save();
 
-    // Clear all FAQ caches
     await cacheService.clearPattern('faqs:*');
     
     res.status(201).json(faq);
@@ -104,7 +97,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update FAQ with cache invalidation
 router.put('/:id', async (req, res) => {
   try {
     const { question, answer } = req.body;
@@ -129,7 +121,6 @@ router.put('/:id', async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    // Clear related caches
     await cacheService.clearPattern(`faq:${req.params.id}:*`);
     await cacheService.clearPattern('faqs:*');
 
@@ -146,7 +137,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete FAQ with cache invalidation
 router.delete('/:id', async (req, res) => {
   try {
     const deletedFAQ = await FAQ.findByIdAndDelete(req.params.id);
@@ -154,9 +144,7 @@ router.delete('/:id', async (req, res) => {
     if (!deletedFAQ) {
       return res.status(404).json({ error: 'FAQ not found' });
     }
-
-    // Clear related caches
-    await cacheService.clearPattern(`faq:${req.params.id}:*`);
+    await cacheService.clearPattern(`faq:${req.params.id}:*`); 
     await cacheService.clearPattern('faqs:*');
 
     res.status(204).end();

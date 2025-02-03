@@ -6,7 +6,7 @@ import app from '../../app.js';
 import FAQ from '../../models/faqm.js';
 import { redisClient, cacheService } from '../../config/redis.js';
 
-// Mock the entire translate module
+
 jest.unstable_mockModule('../../helper/translate.js', () => ({
   translateFAQ: jest.fn().mockImplementation(async () => 
     new Map([['hi', { question: 'टेस्ट प्रश्न?', answer: 'टेस्ट उत्तर' }]])
@@ -15,7 +15,7 @@ jest.unstable_mockModule('../../helper/translate.js', () => ({
   supportedLanguages: ['hi', 'bn', 'fr', 'es']
 }));
 
-// Import the mocked module
+
 const translationService = await import('../../helper/translate.js');
 
 let mongoServer;
@@ -24,7 +24,7 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri());
   
-  // Connect to Redis if not connected
+  
   if (!redisClient.isOpen) {
     await redisClient.connect();
   }

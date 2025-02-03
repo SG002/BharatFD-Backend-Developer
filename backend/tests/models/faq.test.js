@@ -60,7 +60,7 @@ describe('FAQ Model Test Suite', () => {
       expect(faq.getQuestion('hi')).toBe('टेस्ट प्रश्न?');
       expect(faq.getQuestion('fr')).toBe('Question de test?');
       expect(faq.getQuestion('en')).toBe('Test Question?');
-      expect(faq.getQuestion('es')).toBe('Test Question?'); // Fallback to English
+      expect(faq.getQuestion('es')).toBe('Test Question?'); 
     });
 
     test('getAnswer should return correct translation', async () => {
@@ -69,7 +69,7 @@ describe('FAQ Model Test Suite', () => {
       expect(faq.getAnswer('hi')).toBe('टेस्ट उत्तर');
       expect(faq.getAnswer('fr')).toBe('Réponse de test');
       expect(faq.getAnswer('en')).toBe('Test Answer');
-      expect(faq.getAnswer('es')).toBe('Test Answer'); // Fallback to English
+      expect(faq.getAnswer('es')).toBe('Test Answer'); 
     });
   });
 

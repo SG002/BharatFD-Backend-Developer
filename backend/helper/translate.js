@@ -1,15 +1,15 @@
-const googletrans = require('googletrans').default;
+import { translate } from '@vitalets/google-translate-api';
 
-const supportedLanguages = ['hi', 'bn', 'fr', 'es']; 
+export const supportedLanguages = ['hi', 'bn', 'fr', 'es'];
 
-async function translateFAQContent(question, answer) {
+export async function translateFAQContent(question, answer) {
   const translations = new Map();
   
   for (const lang of supportedLanguages) {
     try {
       const [translatedQuestion, translatedAnswer] = await Promise.all([
-        googletrans(question, { to: lang }),
-        googletrans(answer, { to: lang })
+        translate(question, { to: lang }),
+        translate(answer, { to: lang })
       ]);
       
       translations.set(lang, {
@@ -24,8 +24,4 @@ async function translateFAQContent(question, answer) {
   return translations;
 }
 
-module.exports = { 
-  translateFAQContent,
-  translateFAQ: translateFAQContent,
-  supportedLanguages 
-};
+export const translateFAQ = translateFAQContent;
